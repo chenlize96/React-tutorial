@@ -1,92 +1,34 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
 
-/**
- * Tic-tac-toe square.
- */
-class Square extends React.Component {
-    render() {
-        return (
-            <button className="square" onClick={()=>this.props.onClick()}>
-                {this.props.value}
-            </button>
-        );
-    }
-}
+import { Provider } from "react-redux";
+import Board from "./board";
+//import { createStore } from 'redux';  @deprecate
+import { legacy_createStore as createStore } from "redux";
+import { tictactoeApp } from "./reducers";
 
-/**
- * Tic-tac-toe 3x3 board.
- */
-class Board extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            board: Array(9).fill(""), nextPlayer: 'X'
-        }
-    }
-    renderSquare(i) {
-        return <Square value={this.state.board[i]} onClick={()=>this.handleClick(i)}/>;
-    }
+const store = createStore(tictactoeApp);
 
-    handleClick(i) {
-        let newBoard = [...this.state.board];
-        let next = this.state.nextPlayer;
-        // TODO update board state
-        if (newBoard[i] !== "") return;
-        newBoard[i] = next;
-        next = next === "X" ? "O" : "X";
-        console.log(newBoard);
-        this.setState({board: newBoard, nextPlayer: next})
-    }
-    render() {
-        const status = 'Next player: ' + this.state.nextPlayer;
+const Game = () => (
+  <div className="game">
+    <div className="game-board">
+      <Board />
+    </div>
+    <div className="game-info">
+      <div>{/* status */}</div>
+      <ol>{/* players */}</ol>
+    </div>
+  </div>
+);
 
-        return (
-            <div>
-                <div className="status">{status}</div>
-                <div className="board-row">
-                    {this.renderSquare(0)}
-                    {this.renderSquare(1)}
-                    {this.renderSquare(2)}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(3)}
-                    {this.renderSquare(4)}
-                    {this.renderSquare(5)}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(6)}
-                    {this.renderSquare(7)}
-                    {this.renderSquare(8)}
-                </div>
-            </div>
-        );
-    }
-}
-
-class Game extends React.Component {
-    render() {
-        return (
-            <div className="game">
-                <div className="game-board">
-                    <Board />
-                </div>
-                <div className="game-info">
-                    <div>{/* status */}</div>
-                    <ol>{/* players */}</ol>
-                </div>
-            </div>
-        );
-    }
-}
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <Game />
-  </React.StrictMode>
+  </Provider>
+  //document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function
