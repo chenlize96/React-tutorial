@@ -1,69 +1,70 @@
 import React from "react";
-import { connect } from "react-redux";
-//import { selectSquare } from "./actions";
+import { connect } from 'react-redux';
+import { requestPlayers, selectSquare } from "./actions";
 
-/**
- * Tic-tac-toe square.
- */
-const Square = ({ value, selectSquare }) => (
-  <button className="square" onClick={() => selectSquare()}>
-    {value}
-  </button>
-);
+const Square = ({value, selectSquare}) => (
+            <button className="square" onClick={() => selectSquare()}>
+                {value}
+            </button>
+        );
 
-/**
- * Tic-tac-toe 3x3 board.
- */
 class Board extends React.Component {
-  renderSquare(i) {
-    return (
-      <Square
-        value={this.props.board[i]}
-        selectSquare={() => this.props.selectSquare(i)}
-      />
-    );
-  }
 
-  render() {
-    const status = this.props.status;
-    const player = this.props.nextPlayer;
+    componentDidMount() {
+        fetch("https://jsonplaceholder.typicode.com/users").then(res => res.json()).then(res =>
+           // {/* TODO: pass players to request players action */}
+            {this.props.requestPlayers(res.map(i => i.name))}
+        );
+    }
 
-    return (
-      <div>
-        <div className="status">{status + player}</div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
-  }
+    renderSquare(i) {
+        return (
+            <Square value={this.props.board[i]}
+                    selectSquare={() => this.props.selectSquare(i)}
+            />);
+    }
+
+    render() {
+        return (
+            <div>
+                <div className="history">Score: X - {this.props.series["xWins"]}, O - {this.props.series["oWins"]}</div>
+                <div className="status">{this.props.status + this.props.nextPlayer}</div>
+                <div className="boardRow">
+                    {this.renderSquare(0)}
+                    {this.renderSquare(1)}
+                    {this.renderSquare(2)}
+                </div>
+                <div className="boardRow">
+                    {this.renderSquare(3)}
+                    {this.renderSquare(4)}
+                    {this.renderSquare(5)}
+                </div>
+                <div className="boardRow">
+                    {this.renderSquare(6)}
+                    {this.renderSquare(7)}
+                    {this.renderSquare(8)}
+                </div>
+
+            </div>
+        );
+    }
 }
 
 const mapStateToProps = (state) => {
-  return {
-    board: state.board,
-    player: state.player,
-    status: state.status,
-    nextPlayer: state.nextPlayer,
-  };
+    return {
+        nextPlayer: state.nextPlayer,
+        series: state.series,
+        status: state.status,
+        board: state.board
+    }
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {
-    selectSquare: (id) => dispatch({ type: "SELECT_SQUARE", id }),
-  };
+    return {
+        selectSquare: (id) => dispatch(selectSquare(id)),
+        // TODO: create a "requestPlayers" function prop that dispatches the request players action
+        requestPlayers: (players) => dispatch(requestPlayers(players))
+    }
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Board);

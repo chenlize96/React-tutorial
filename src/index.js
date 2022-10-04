@@ -1,33 +1,55 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "./index.css";
-import reportWebVitals from "./reportWebVitals";
-
-import { Provider } from "react-redux";
-import Board from "./board";
-//import { createStore } from 'redux';  @deprecate
-import { legacy_createStore as createStore } from "redux";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import {Provider} from "react-redux";
+import { BrowserRouter as Router, Link, Route, Routes } from 'react-router-dom';
+import Board from './Board';
+import Players from './Players';
+import { configureStore } from '@reduxjs/toolkit'
 import { tictactoeApp } from "./reducers";
 
-const store = createStore(tictactoeApp);
+import reportWebVitals from './reportWebVitals';
 
-const Game = () => (
-  <div className="game">
-    <div className="game-board">
-      <Board />
-    </div>
-    <div className="game-info">
-      <div>{/* status */}</div>
-      <ol>{/* players */}</ol>
-    </div>
-  </div>
-);
+/**
+ * Tic-tac-toe game.
+ */
+class Game extends React.Component {
+    render() {
+        return (
+            <div className="game">
+                <div className="game-board">
+                    <Board />
+                </div>
+                <div className="game-info">
+                    <div>{/* status */}</div>
+                    <ol>{/* players */}</ol>
+                </div>
+                <div>
+                    <Link to={"/players"}>Players</Link>
+                </div>
+            </div>
+        );
+    }
+}
 
+const store = configureStore({reducer: tictactoeApp});
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <Provider store={store}>
-    <Game />
-  </Provider>
+  <React.StrictMode>
+      <Provider store={ store }>
+          <Router>
+              <Routes>
+                  {/* <Route exact path={"/"}>
+                      <Game />
+                  </Route> */}
+                  <Route path="/" element={<Game />} /> 
+                  {/* TODO: create a route for the '/players' endpoint */}
+                  <Route exact path={"/players"} element={<Players />} />      
+              </Routes>
+          </Router>
+
+      </Provider>
+  </React.StrictMode>,
   //document.getElementById('root')
 );
 
